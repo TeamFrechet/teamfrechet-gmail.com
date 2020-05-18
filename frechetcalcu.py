@@ -71,16 +71,19 @@ def Start(func1,func2,approx):
     flagq = np.zeros(len(P))
 
     # give feasible path but not the best one
-
+    # check it
 
     for i in range(len(frec[1])):
         for j in range(len(frec[1])):
-            if ((frec[1])[i,j]<=frec[0] and flagp[j]==0):
-                plt.plot([P[i][0],Q[j][0]],[P[i][1],Q[j][1]],c='tab:grey')
-                flagp[j] = 1
-            if ((frec[1])[j,i]<=frec[0] and flagq[i]==0):
-                plt.plot([P[i][0],Q[j][0]],[P[i][1],Q[j][1]],c='tab:grey')
-                flagq[i] = 1
+            if ((frec[1])[i, j] <= frec[0] and flagp[i] == -1):
+                plt.plot([P[i][0], Q[j][0]], [P[i][1], Q[j][1]], c='tab:grey')
+                flagp[i] = j
+                flagq[j] = i
+    for i in range(len(frec[1])):
+        for j in range(len(frec[1])):
+            if (((frec[1]).transpose())[i,j] <= frec[0] and flagq[i] == -1 and flagp[i]!=j):
+                plt.plot([P[j][0], Q[i][0]], [P[j][1], Q[i][1]], c='tab:green') #change to grey
+                flagq[i] = j
     plt.show()
 
 
