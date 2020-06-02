@@ -88,7 +88,8 @@ def drawDistanceSamples(func1,func2,approx,jump):
 
 
 if __name__ == '__main__':
-
+    
+    # unrelevant for the project
     # use this code if you want to use samples matrix
 
     # aproxximate = 5
@@ -97,12 +98,19 @@ if __name__ == '__main__':
     # Q = symbolFunction()[1]
     # drawDistanceSamples(P,Q,aproxximate,samples_jump)
 
+    # for project:
     # use this code if you wat to use points
 
     # draw the curves
 
-    P = [[0,0],[1,1],[2,2]]
-    Q = [[0,1],[1,2],[2,3]]
+    #P = [[0,0],[1,1],[2,2]]
+    #Q = [[0,1],[1,2],[2,3]]
+    
+    # cureve2 from the ferchet view platform
+    P = [[12.8289,228.248],[24.0543,253.104],[46.8761,257.56],[46.3385,242.508],[85.4033,257.023],[97.2302,254.693],[95.6174,215.27],[104.502,233.594],[105.571,215.419]]
+    Q = [[47.2345,215.27],[48,240],[89.8827,249.659],[67.6065,215.331],[84.9682,200.029],[102.413,190.692],[176.614,216.736],[112.902,213.953]]
+
+    
     functionDraw(P,'tab:green')
     functionDraw(Q,'tab:blue')
 
@@ -112,8 +120,9 @@ if __name__ == '__main__':
     plt.figure()
 
     ######## continue from here ########
-    # track.pathLimit(P,Q,0.1) # function in curvesTrack class for calculate the path
     # this function is not finished yet, have some bugs
+    track.free_space_area(P,Q,frec[0])#  maybe not nessery #P,Q,epsilon 
+    plt.show()
 
 
 
