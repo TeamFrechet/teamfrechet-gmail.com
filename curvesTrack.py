@@ -20,77 +20,85 @@ def straightLine(point1,point2):
         m = 0
     else:
         m = (point1[1] - point2[1]) / (point1[0] - point2[0])
-    f = m * (x - point1[0]) + point2[1]
+    f = m * (x - point1[0]) + point1[1]
     return [f,m]
 
+# function to setting pivot axis
+def make_pivot(P):# working good
+    pivot =[0]
+    dist = 0
+    for i in range(1,len(P)):
+        dist += frechetcalcu.euc_dist(P[i-1],P[i])
+        pivot.append(dist)
 
-# P becomes the X-axis Q becomes Y-axis
-def pathLimit(P,Q,path_jump):
-    frecht_distance = frechetcalcu.frechetDist(P,Q)
-    X = ([P[j][1] for j in range(len(P))])
-    Y = ([Q[j][1] for j in range(len(Q))])
-    Ppath = [P[0]]
-    Qpath = [Q[0]]
-    # temp path on P,Q straight lines
+    return pivot
 
-    path = []
-    # final common path of P and Q
+#function to show pivot grid
+def grid_show(X,Y):
+    plt.xlim((X[0], X[len(X) - 1]))
+    plt.ylim((Y[0], Y[len(Y) - 1]))
+    plt.xticks(X)
+    plt.yticks(Y)
+    plt.grid(True)
+    
+    
+# this function is not finished yet and have some bugs
+def free_space_area(P, Q,epsilon):
 
-    #should think of a differnt idea!!
+    X = make_pivot(P)
+    Y = make_pivot(Q)
+    plt.xlabel('P')
+    plt.ylabel('Q')
+    grid_show(X,Y)
+
+
+    # from here i have bugs!!!!!!!
+    jump = 0.9
     counter = [P[0][0],Q[0][0]]
-    # for making Ppath ,Qpath
+    P_lines = []
+    Q_lines = []
+    good_space = []
+    X_couter = X[0]
+    Y_couter = Y[0]
+    # line array of P and Q
 
-    x = sym.symbols('x')
-    # to use straightLine function
+    for i in range(1,len(P)-1):
+        mp = straightLine(P[i -1], P[i])[1]
+        f = straightLine(P[i - 1], P[i])[0]
+        mq = straightLine(Q[i - 1], Q[i])[1]
+        g = straightLine(Q[i - 1], Q[i])[0]
+        P_lines.append([P[i-1],f,mp])
+        Q_lines.append([Q[i-1],g,mq])
+    for i in range(1,len(Q)-1):
+        while Y[i-1]>=Y_couter:
+            for j in range(1,len(P)-1):
+                while X[j]>=X_couter:
+                    if frechetcalcu.euc_dist([counter[1],Q_lines[i-1][1].subs('x',counter[1])],[counter[0],P_lines[j-1][1].subs('x',counter[0])]) < epsilon:
+                        good_space.append([X_couter,Y_couter])
+                    if P_lines[j-1][2] > 0:
+                        counter[0] += jump
+                        X_couter += frechetcalcu.euc_dist([counter[0]-jump, P_lines[j - 1][1].subs('x', counter[0]-jump)],[counter[0], P_lines[j - 1][1].subs('x', counter[0])])
+                    else:
+                        counter[0] -= jump
+                        X_couter += frechetcalcu.euc_dist([counter[0]+jump, P_lines[j - 1][1].subs('x', counter[0]+jump)],[counter[0], P_lines[j - 1][1].subs('x', counter[0])])
+                counter[0] = P[j][0]
+                X_couter = X[j]
+            if Q_lines[i-1][2] > 0:
+                Y_couter += frechetcalcu.euc_dist([counter[1]-jump, Q_lines[i - 1][1].subs('x', counter[1]-jump)], [counter[1], Q_lines[i - 1][1].subs('x', counter[1])])
+                counter[1] += jump
+            else:
+                Y_couter += frechetcalcu.euc_dist([counter[1]+jump, Q_lines[i - 1][1].subs('x', counter[1]+jump)], [counter[1], Q_lines[i - 1][1].subs('x', counter[1])])
+                counter[1] -= jump
+            X_couter = X[0]
+        Y_couter = Y[i]
+        counter[0] = Q[i][0]
 
-    n = len(P)
-    for i in range(1,n):
-        mp = straightLine(P[i - 1],P[i])[1]
-        f = straightLine(P[i - 1],P[i])[0]
-        mq = straightLine(Q[i - 1],Q[i])[1]
-        g = straightLine(Q[i - 1],Q[i])[0]
-        print('f',f,'g',g)
-        while True:
-            if mp == 0:
-                # f = const
-                Ppath.append([counter[0], f])
-            else:
-                Ppath.append([counter[0],f.subs(x,counter[0])])
-            if mq == 0:
-                # g = const
-                Qpath.append([counter[1], g])
-            else:
-                Qpath.append(([counter[1],g.subs(x,counter[1])]))
-            counter[0] += path_jump
-            counter[1] += path_jump
-            if(frechetcalcu.frechetDist(Ppath, Qpath)[0] > frecht_distance[0]) or counter[0] >= P[i][1] or counter[1] >= Q[i][1]:
-                # breack when:
-                # the frechet distance between current chosen lines, is bigger then the leash or is one of the shpits
-                break
-        # here should save the two curve that good for current frechet distance - Ppath,Qpath
-        if counter[0] >= P[i][1] and counter[1] < Q[i][1]:
-            # got to the spitz P point
-            counter[0] = P[i][1]
-            path.append([Ppath[0], Qpath[0]])
-            if mq == 0:
-                path.append([counter[0],g])
-            else:
-                path.append([counter[0],g.subs(x,counter[1])])
-        elif counter[1] >= Q[i][1] and counter[0] < P[i][1]: # got to the spitz Q point
-            counter[1] = Q[i][1]
-            path.append([Ppath[0][1], Qpath[0][1]])
-            if mp == 0:
-                path.append([f, counter[1]])
-            else:
-                path.append([f.subs(x, counter[0]),counter[1]])
-        else:
-            # got to the spitz of both P and Q points
-            path.append([Ppath[0][1], Qpath[0][1]])
-            path.append([P[i][1],Q[i][1]])
-        Ppath = [Ppath[len(Ppath)-1]]
-        Qpath = [Qpath[len(Qpath)-1]]
-    for i in range(1,len(path)):
-        print()
-        plt.plot([path[i-1][0],path[i][0]],[path[i-1][1],path[i][1]],'y')
-    plt.suptitle('common path')
-    plt.show()
+    xscat = [good_space[i][0] for i in range(len(good_space))]
+    yscat = [good_space[i][1] for i in range(len(good_space))]
+    plt.scatter(xscat,yscat,s=jump*100)
+
+
+#itay! it you mission to start from here!
+def pathLimit(P,Q,path_jump):
+
+    return
