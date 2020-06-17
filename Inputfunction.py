@@ -18,7 +18,6 @@ def functionDraw(P,color): # P matrix 2 x n #color = tab:green
     n = len(P)
     for i in range(1,n):
         plt.plot([P[i-1][0],P[i][0]],[P[i-1][1],P[i][1]],c=color)
-        print('draw')
 
 
 # symbol function O N L Y
@@ -87,9 +86,10 @@ def drawDistanceSamples(func1,func2,approx,jump):
     plt.show()
 
 
+
+
 if __name__ == '__main__':
-    
-    # unrelevant for the project
+
     # use this code if you want to use samples matrix
 
     # aproxximate = 5
@@ -98,32 +98,36 @@ if __name__ == '__main__':
     # Q = symbolFunction()[1]
     # drawDistanceSamples(P,Q,aproxximate,samples_jump)
 
-    # for project:
     # use this code if you wat to use points
 
     # draw the curves
-
-    #P = [[0,0],[1,1],[2,2]]
-    #Q = [[0,1],[1,2],[2,3]]
-    
-    # cureve2 from the ferchet view platform
     P = [[12.8289,228.248],[24.0543,253.104],[46.8761,257.56],[46.3385,242.508],[85.4033,257.023],[97.2302,254.693],[95.6174,215.27],[104.502,233.594],[105.571,215.419]]
     Q = [[47.2345,215.27],[48,240],[89.8827,249.659],[67.6065,215.331],[84.9682,200.029],[102.413,190.692],[176.614,216.736],[112.902,213.953]]
+    R = [[27.25,300.27],[41,320],[60.8827,352.65],[40.6,300.3],[60,300.02],[89.4,170],[101.1,104.7],[107.9,142.953]]
+    #P = [[0,0],[1,1],[2,2],[3,3]]
+    #Q = [[0,0.25],[1,1.25],[2,2.25],[3,3.25]]
+    #R = [[0,0.5],[1,1.5],[2,2.5],[3,3.5]]
+    functionDraw(P,'tab:blue')
+    functionDraw(Q,'tab:red')
+    # frechet diatance for 2 curves
+    frec_P_Q = frechetcalcu.frechetDist(P,Q)  # frec[0] is the leash lenght frec[1] is the distance matrix
+    plt.title(frec_P_Q[0])
+    plt.suptitle('frechet distance between P&Q=')
 
-    
-    functionDraw(P,'tab:green')
-    functionDraw(Q,'tab:blue')
 
-    frec = frechetcalcu.frechetDist(P, Q)  # frec[0] is the leash lenght frec[1] is the distance matrix
-    plt.title(frec[0])
-    plt.suptitle('frechet distance=')
     plt.figure()
 
     ######## continue from here ########
-    # this function is not finished yet, have some bugs
-    track.free_space_area(P,Q,frec[0])#  maybe not nessery #P,Q,epsilon 
+    #track.free_space_area(P,Q,frec_P_Q[0])
+    #track.pathLimit(P,Q,3) # function in curvesTrack class for calculate the path
+    # this function is not right!! itay on the frechet path. do not use curvesTrack
+    functionDraw(P,'tab:blue')
+    functionDraw(Q,'tab:red')
+    functionDraw(R,'tab:green')
+    # frechet diatance for 3 curves
+    plt.title(frechetcalcu.multiple_frechetDist(P,Q,R)[0])
+    plt.suptitle('frechet distance between P&Q&R=')
+    print(frechetcalcu.multiple_frechetDist(P,Q,R)[0])
+    print(frechetcalcu.frechetDist(P,R)[0])
+    print(frechetcalcu.frechetDist(Q,R)[0])
     plt.show()
-
-
-
-
