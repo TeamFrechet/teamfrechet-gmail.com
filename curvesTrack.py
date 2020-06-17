@@ -6,22 +6,12 @@ import frechetcalcu
 import Inputfunction as inputf
 
 
-##### this function isnt finish yet!!!#####
-############## should fix it ##############
+# D O   N O T   U S E !
+##### this class isnt finish yet!!!#####
+############# should fix it ############
+############itay working on it###########
 
 # class for calculate and plot the final path
-
-# return [straight line between them, gradient]
-def straightLine(point1,point2):
-    # input: point1,2 = [x,y]
-    x = sym.symbols('x')
-    if (point1[0] - point2[0]) == 0:
-        # to solve math error
-        m = 0
-    else:
-        m = (point1[1] - point2[1]) / (point1[0] - point2[0])
-    f = m * (x - point1[0]) + point1[1]
-    return [f,m]
 
 # function to setting pivot axis
 def make_pivot(P):# working good
@@ -40,9 +30,7 @@ def grid_show(X,Y):
     plt.xticks(X)
     plt.yticks(Y)
     plt.grid(True)
-    
-    
-# this function is not finished yet and have some bugs
+
 def free_space_area(P, Q,epsilon):
 
     X = make_pivot(P)
@@ -82,7 +70,7 @@ def free_space_area(P, Q,epsilon):
                         counter[0] -= jump
                         X_couter += frechetcalcu.euc_dist([counter[0]+jump, P_lines[j - 1][1].subs('x', counter[0]+jump)],[counter[0], P_lines[j - 1][1].subs('x', counter[0])])
                 counter[0] = P[j][0]
-                X_couter = X[j]
+                X_couter = X[j-1]
             if Q_lines[i-1][2] > 0:
                 Y_couter += frechetcalcu.euc_dist([counter[1]-jump, Q_lines[i - 1][1].subs('x', counter[1]-jump)], [counter[1], Q_lines[i - 1][1].subs('x', counter[1])])
                 counter[1] += jump
@@ -90,15 +78,32 @@ def free_space_area(P, Q,epsilon):
                 Y_couter += frechetcalcu.euc_dist([counter[1]+jump, Q_lines[i - 1][1].subs('x', counter[1]+jump)], [counter[1], Q_lines[i - 1][1].subs('x', counter[1])])
                 counter[1] -= jump
             X_couter = X[0]
-        Y_couter = Y[i]
+        Y_couter = Y[i-1]
         counter[0] = Q[i][0]
 
+
+    print(P)
+    print(Q)
+    print(good_space)
     xscat = [good_space[i][0] for i in range(len(good_space))]
     yscat = [good_space[i][1] for i in range(len(good_space))]
     plt.scatter(xscat,yscat,s=jump*100)
 
 
-#itay! it you mission to start from here!
-def pathLimit(P,Q,path_jump):
+# return [straight line between them, gradient]
+def straightLine(point1,point2):
+    # input: point1,2 = [x,y]
+    x = sym.symbols('x')
+    if (point1[0] - point2[0]) == 0:
+        # to solve math error
+        m = 0
+    else:
+        m = (point1[1] - point2[1]) / (point1[0] - point2[0])
+    f = m * (x - point1[0]) + point1[1]
+    return [f,m]
 
+
+# P becomes the X-axis Q becomes Y-axis
+def pathLimit(P,Q,path_jump):
+    frecht_distance = frechetcalcu.frechetDist(P,Q)
     return
