@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import math
 import numpy as np
+import itertools
 import sympy as sym
 
 # This class only computes the discrete frechet distance between two polygonal lines
@@ -12,7 +13,73 @@ def euc_dist(pt1,pt2):
     return math.sqrt((pt2[0]-pt1[0])*(pt2[0]-pt1[0])+(pt2[1]-pt1[1])*(pt2[1]-pt1[1]))
 
 
-# calculate frechet distance
+def max_euc_dist(curves,index):
+    max_arr = []
+    for i in range(len(curves)):
+        if i == len(curves)-1:
+            max_arr.append(euc_dist(curves[i][index[i]],curves[0][index[0]]))
+        else:
+            max_arr.append(euc_dist(curves[i][index[i]],curves[i+1][index[i+1]]))
+    return max(max_arr)
+
+
+def combi(index):
+    combindex = []
+    finalcombi = []
+    all_combi = []
+    for i in np.arange(0, len(index), 2):
+        if (len(index)) % 2 == 0 or i != (len(index) - 1):
+            temp_combi = []
+            for j in itertools.product([index[i], index[i] - 1], [index[i + 1], index[i + 1] - 1]):
+                temp_combi.append(j)
+            combindex.append(temp_combi)
+    for i in itertools.product(*combindex):
+        all_combi.append(i)
+    for arr_tuple in all_combi:
+        arr_combi = []
+        for t in arr_tuple:
+            arr_combi.append(t[0])
+            arr_combi.append(t[1])
+        finalcombi.append(arr_combi)
+    if (len(index)) % 2 != 0:
+        finalcombi_temp = []
+        for k in finalcombi:
+            temp1,temp2 = k.copy(),k.copy()
+            temp1.append(index[int(len(index)) - 1])
+            temp2.append(index[int(len(index)) - 1] - 1)
+            finalcombi_temp.append(temp1)
+            finalcombi_temp.append(temp2)
+        finalcombi = finalcombi_temp.copy()
+    if index in finalcombi:
+        finalcombi.remove(index)
+    validcombi = []
+    for i in finalcombi:
+        if -1 not in i:
+            validcombi.append(i)
+    return validcombi
+
+
+#for multi curves
+def _c_multi_new(ca,index,curves):
+    # i for P j for Q
+    if int(ca[tuple(index)]) > -1:
+        return ca[tuple(index)],ca
+    elif np.count_nonzero(index) == 0:
+        ca[tuple(index)] = max_euc_dist(curves,index) # calculate the dist between the last(first) two point of P,Q
+    elif combi(index):
+        temp_min = []
+        for current_indexes in combi(index):
+            temp_min.append(_c_multi_new(ca,current_indexes,curves)[0])
+        rec_min = min(temp_min)
+        ca[tuple(index)] = max(rec_min,max_euc_dist(curves,index))
+    else:
+        #  error
+        ca[tuple(index)] = float("inf")
+    return ca[tuple(index)],ca
+
+
+
+# calculate frechet distance fo 2 curves O N L Y
 def _c(ca,i,j,P,Q):
     # i for P j for Q
     if ca[i,j] > -1:
@@ -43,8 +110,8 @@ def _c(ca,i,j,P,Q):
 
 # calculate frechet multiple distance
 # while P is the man and Q,R dogs
+# temporary for 3 curve
 def _c_multi(ca,i,j,k,P,Q,R):
-
     # i for P j for Q
     if (int(ca[i,j,k]) > -1):
         return ca[i, j, k],ca
@@ -79,6 +146,20 @@ def _c_multi(ca,i,j,k,P,Q,R):
         #  error
         ca[i,j,k] = float("inf")
     return ca[i,j,k],ca
+
+
+def multiple_frechetDist_new(curves):
+    length = []
+    index = []
+    for i in curves:
+        length.append(len(i))
+        index.append(len(i)-1)
+    ca = np.ones(length)
+    # a matrix of one size: rows- rows of P, col- rows of Q
+    ca = np.multiply(ca, -1)
+    # same matrix all values double minus one
+    return _c_multi_new(ca,index,curves)
+    # send ca and index of the last places at ca with P,Q
 
 
 def multiple_frechetDist(P,Q,R):
