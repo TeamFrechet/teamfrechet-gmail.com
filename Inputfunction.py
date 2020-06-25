@@ -3,6 +3,7 @@ import math
 import numpy as np
 import sympy as sym
 import frechetcalcu
+import itertools
 import curvesTrack as track
 
 # this class is the main class
@@ -86,8 +87,6 @@ def drawDistanceSamples(func1,func2,approx,jump):
     plt.show()
 
 
-
-
 if __name__ == '__main__':
 
     # use this code if you want to use samples matrix
@@ -107,10 +106,11 @@ if __name__ == '__main__':
     #P = [[0,0],[1,1],[2,2],[3,3]]
     #Q = [[0,0.25],[1,1.25],[2,2.25],[3,3.25]]
     #R = [[0,0.5],[1,1.5],[2,2.5],[3,3.5]]
+
     functionDraw(P,'tab:blue')
     functionDraw(Q,'tab:red')
     # frechet diatance for 2 curves
-    frec_P_Q = frechetcalcu.frechetDist(P,Q)  # frec[0] is the leash lenght frec[1] is the distance matrix
+    frec_P_Q = frechetcalcu.multiple_frechetDist_new([P,Q])  # frec[0] is the leash lenght frec[1] is the distance matrix
     plt.title(frec_P_Q[0])
     plt.suptitle('frechet distance between P&Q=')
 
@@ -125,9 +125,9 @@ if __name__ == '__main__':
     functionDraw(Q,'tab:red')
     functionDraw(R,'tab:green')
     # frechet diatance for 3 curves
-    plt.title(frechetcalcu.multiple_frechetDist(P,Q,R)[0])
+    plt.title(frechetcalcu.multiple_frechetDist_new([P,Q,R])[0])
     plt.suptitle('frechet distance between P&Q&R=')
-    print(frechetcalcu.multiple_frechetDist(P,Q,R)[0])
+    print(frechetcalcu.multiple_frechetDist_new([P,Q,R])[0])
     print(frechetcalcu.frechetDist(P,R)[0])
     print(frechetcalcu.frechetDist(Q,R)[0])
     plt.show()
